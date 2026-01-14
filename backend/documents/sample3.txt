@@ -1,0 +1,25 @@
+Python Programming and Data Science
+
+Python is a high-level, interpreted programming language known for its simplicity and readability. It has become the de facto language for data science, machine learning, and AI development.
+
+Key Python libraries for data science:
+- NumPy: Numerical computing and array operations
+- Pandas: Data manipulation and analysis
+- Matplotlib: Data visualization
+- Scikit-learn: Machine learning algorithms
+- TensorFlow/PyTorch: Deep learning frameworks
+
+Python's ecosystem includes powerful tools for working with text and documents:
+- LangChain: Framework for building applications with LLMs
+- Sentence Transformers: Generating embeddings from text
+- ChromaDB: Vector database for storing embeddings
+- Beautiful Soup: Web scraping and HTML parsing
+
+Best practices in Python development:
+- Use virtual environments to manage dependencies
+- Follow PEP 8 style guidelines
+- Write docstrings for functions and classes
+- Use type hints for better code clarity
+- Implement error handling with try-except blocks
+
+Python's versatility makes it ideal for building end-to-end data science pipelines, from data collection and preprocessing to model training and deployment.

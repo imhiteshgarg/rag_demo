@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RAG Application - Ask Questions</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🔍 RAG Application</h1>
+            <p class="subtitle">Retrieval-Augmented Generation - Ask questions about your documents</p>
+        </header>
+
+        <main>
+            <div class="query-section">
+                <div class="input-group">
+                    <textarea 
+                        id="questionInput" 
+                        placeholder="Ask a question about your documents..."
+                        rows="3"
+                    ></textarea>
+                    <button id="submitBtn" onclick="submitQuery()">
+                        <span id="btnText">Ask Question</span>
+                        <span id="btnLoader" class="loader" style="display: none;"></span>
+                    </button>
+                </div>
+            </div>
+
+            <div id="answerSection" class="answer-section" style="display: none;">
+                <h2>Answer</h2>
+                <div id="answerContent" class="answer-content"></div>
+            </div>
+
+            <div id="sourcesSection" class="sources-section" style="display: none;">
+                <h2>Sources</h2>
+                <div id="sourcesContent" class="sources-content"></div>
+            </div>
+
+            <div id="errorSection" class="error-section" style="display: none;">
+                <div id="errorContent" class="error-content"></div>
+            </div>
+        </main>
+
+        <footer>
+            <p>Powered by LangChain, ChromaDB, and Sentence Transformers</p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
