@@ -22,5 +22,11 @@
   ],
   "env": {
     "PYTHON_VERSION": "3.11"
+  },
+  "functions": {
+    "api/index.py": {
+      "maxDuration": 60,
+      "memory": 1024
+    }
   }
 }
