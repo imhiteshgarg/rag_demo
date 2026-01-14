@@ -13,28 +13,51 @@ from flask_cors import CORS
 backend_path = os.path.join(os.path.dirname(__file__), '..', 'backend')
 sys.path.insert(0, backend_path)
 
-from application.dependencies import DIContainer
+try:
+    from application.dependencies import DIContainer
+except ImportError as e:
+    print(f"Import error: {e}")
+    print(f"Python path: {sys.path}")
+    print(f"Backend path: {backend_path}")
+    print(f"Backend path exists: {os.path.exists(backend_path)}")
+    raise
 
 app = Flask(__name__)
 CORS(app)
 
 # Initialize RAG system
 BASE_DIR = Path(__file__).parent.parent
+# Documents stay in repo (read-only in Vercel)
 DOCUMENTS_DIR = BASE_DIR / "backend" / "documents"
-VECTORSTORE_DIR = BASE_DIR / "backend" / "chroma_db"
+# Use /tmp for vectorstore (writable in serverless)
+VECTORSTORE_DIR = Path('/tmp') / "chroma_db"
 
 DOCUMENTS_DIR.mkdir(exist_ok=True, parents=True)
 VECTORSTORE_DIR.mkdir(exist_ok=True, parents=True)
 
-# Create dependency injection container
-container = DIContainer(
-    documents_dir=str(DOCUMENTS_DIR),
-    persist_directory=str(VECTORSTORE_DIR)
-)
+# Lazy-load container to avoid OOM at import time
+# Don't create container until first request
+_container = None
+
+def get_container():
+    """Lazy-load container only when needed."""
+    global _container
+    if _container is None:
+        try:
+            _container = DIContainer(
+                documents_dir=str(DOCUMENTS_DIR),
+                persist_directory=str(VECTORSTORE_DIR)
+            )
+        except Exception as e:
+            print(f"Error creating container: {e}")
+            import traceback
+            traceback.print_exc()
+            raise
+    return _container
 
 _initialized = False
 
-def ensure_initialized():
+def ensure_initialized(container):
     global _initialized
     if not _initialized:
         try:
@@ -58,19 +81,22 @@ def ensure_initialized():
             import traceback
             traceback.print_exc()
 
-@app.route('/api/health', methods=['GET'])
+@app.route('/health', methods=['GET'])
 def health():
+    container = get_container()
     return container.rag_controller.health()
 
-@app.route('/api/query', methods=['POST'])
+@app.route('/query', methods=['POST'])
 def query():
-    ensure_initialized()
+    container = get_container()
+    ensure_initialized(container)
     return container.rag_controller.query()
 
-@app.route('/api/status', methods=['GET'])
+@app.route('/status', methods=['GET'])
 def status():
     try:
-        ensure_initialized()
+        container = get_container()
+        ensure_initialized(container)
         return container.rag_controller.status(container.vectorstore_repo)
     except Exception as e:
         return {"error": str(e)}, 500
